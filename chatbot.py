@@ -29,7 +29,7 @@ sources = data["sources"]
 
 # -------- RETRIEVAL --------
 def retrieve(query, k=8):
-    q_emb = embedder.encode([query]).astype("float32")
+    q_emb = embedder.encode([query], convert_to_tensor=True).cpu().numpy().astype("float32")
     _, I = index.search(q_emb, min(k, index.ntotal))
 
     chunks = []
