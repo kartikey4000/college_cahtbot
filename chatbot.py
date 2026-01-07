@@ -1,15 +1,21 @@
 import faiss
 import pickle
 import numpy as np
-from openai import OpenAI
+import google.generativeai as genai
 from sentence_transformers import SentenceTransformer
-
+import os
+from dotenv import load_dotenv
+load_dotenv(dotenv_path=".env.local")
 # -------- CONFIG --------
 INDEX_DIR = "faiss_index"
 MAX_CONTEXT_CHARS = 5000
+# Configure your API Key here
+api_key = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=api_key)
 
 # -------- MODELS --------
-client = OpenAI()
+# Initializing the Gemini model (using flash for speed/cost similar to gpt-4o-mini)
+model = genai.GenerativeModel('gemini-2.5-flash-preview-09-2025')
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
 
 # -------- LOAD INDEX --------
@@ -69,11 +75,13 @@ Question:
 Answer clearly using bullet points or short paragraphs.
 """
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.2,
-        max_tokens=400
+    # Gemini specific generation
+    response = model.generate_content(
+        prompt,
+        generation_config=genai.types.GenerationConfig(
+            temperature=0.2,
+            max_output_tokens=400,
+        ),
     )
 
-    return response.choices[0].message.content, set(srcs)
+    return response.text, set(srcs)
