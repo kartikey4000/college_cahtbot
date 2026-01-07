@@ -39,7 +39,7 @@ MarkupSafe
 mpmath
 narwhals
 networkx
-numpy
+numpy<2.0
 openai
 packaging
 pandas
