@@ -46,3 +46,4 @@ PyYAML
 tenacity
 tqdm
 fsspec
+faiss-cpu
